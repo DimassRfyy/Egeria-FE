@@ -1,3 +1,9 @@
+<h2 id="about">💄🛒 About Egeria Cosmetic Store</h2>
+
+This website is used to purchase cosmetic products online, equipped with a basket feature and admin dashboard for resource management
+
+<p></p>
+
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
