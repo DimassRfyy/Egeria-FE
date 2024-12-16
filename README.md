@@ -4,6 +4,24 @@ This website is used to purchase cosmetic products online, equipped with a baske
 
 <p></p>
 
+<h2 id="feature">✨ Features Available</h2>
+
+- Admin Dasboard
+  - Login admin
+  - Manage data categories
+  - Manage data brands
+  - Manage data products cosmetic
+  - Manage booking transaction
+- Purchasing Products
+  - Displays product, categories and brands
+  - displays popular and unpopular products
+  - Shopping Cart
+  - Search produtcs
+  - Purchase products by filling in personal data and sending proof
+  - Check transactions and monitor transactions
+
+<p></p>
+
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
