@@ -70,7 +70,7 @@ export default function BrowsePage() {
   }, []);
 
   if (loadingCategories && loadingPopularCosmetics && loadingAllCosmetics) {
-    return <p>Loading...</p>;
+    return <p className="min-h-screen flex justify-center items-center">Loading...</p>;
   }
 
   if (error) {
@@ -103,7 +103,7 @@ export default function BrowsePage() {
       <section id="Company">
         <div className="flex justify-between px-5">
           <a href="">
-            <img src="/assets/images/logos/shayna.svg" alt="icon" className="h-[48px] w-[113px] shrink-0" />
+            <img src="/assets/images/logos/egeria-logo.png" alt="icon" className="h-[48px] w-[113px] shrink-0" />
           </a>
           <div className="flex items-center gap-[10px]">
             <a href="" className="flex size-[44px] items-center justify-center rounded-full bg-cosmetics-greylight p-px transition-all duration-300 hover:bg-cosmetics-gradient-purple-pink hover:p-[2px]">
@@ -152,7 +152,7 @@ export default function BrowsePage() {
           <div className="categories-cards grid grid-cols-3 gap-4">
             {categories.length > 0 ? (
               categories.map((category) => (
-                <Link to="category.html" key={category.id}>
+                <Link to={`/category/${category.slug}`} key={category.id}>
                   <div className="flex h-[142px] items-center justify-center rounded-3xl bg-cosmetics-greylight p-px transition-all duration-300 hover:bg-cosmetics-gradient-purple-pink hover:p-[2px]">
                     <div className="flex h-full w-full flex-col justify-center rounded-[23px] bg-white px-[10px] hover:rounded-[22px]">
                       <div className="mx-auto mb-[10px] flex size-[60px] items-center justify-center overflow-hidden rounded-full">
@@ -191,7 +191,7 @@ export default function BrowsePage() {
                           <div className="des flex flex-col gap-1">
                             <h4 className="text-xs leading-[18px] text-cosmetics-purple">{cosmetic.brand.name.toLocaleUpperCase()}</h4>
                             <h3 className="line-clamp-2 h-[48px] w-full font-semibold">{cosmetic.name}</h3>
-                            <strong className="font-semibold text-cosmetics-pink">{new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR" }).format(cosmetic.price)}</strong>
+                            <strong className="font-semibold text-cosmetics-pink">{new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(cosmetic.price)}</strong>
                           </div>
                         </div>
                       </div>
@@ -220,7 +220,7 @@ export default function BrowsePage() {
                       <h4 className="text-xs leading-[18px] text-cosmetics-purple">{cosmetic.brand.name.toLocaleUpperCase()}</h4>
                       <h3 className="line-clamp-2 h-[48px] w-full font-semibold">{cosmetic.name}</h3>
                       <div className="flex items-center justify-between">
-                        <strong className="font-semibold text-cosmetics-pink">{new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR" }).format(cosmetic.price)}</strong>
+                        <strong className="font-semibold text-cosmetics-pink">{new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(cosmetic.price)}</strong>
                         <div className="flex items-center justify-center gap-[2px]">
                           <img src="/assets/images/icons/star.svg" alt="icon" className="size-4 shrink-0" />
                           <p className="text-xs font-bold leading-[18px]">4.8</p>
