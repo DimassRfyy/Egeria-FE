@@ -22,6 +22,16 @@ This website is used to purchase cosmetic products online, equipped with a baske
 
 <p></p>
 
+<h2 id="support">💌 Support me</h2>
+
+You can support me on the trakteer platform! Your support will be very helpful for me, but with you starring this project has also been very helpful, you know!
+
+<p></p>
+
+<a href="https://trakteer.id/dimassrfyy" target="_blank"><img id="wse-buttons-preview" src="https://cdn.trakteer.id/images/embed/trbtn-red-5.png" height="40" style="border:0px;height:40px;" alt="Trakteer Saya"></a>
+
+<p></p>
+
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
