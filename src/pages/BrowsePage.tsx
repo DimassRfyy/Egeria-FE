@@ -159,7 +159,7 @@ export default function BrowsePage() {
                         <img src={`${BASE_URL}/${category.photo}`} alt="image" className="h-full w-full object-cover" />
                       </div>
                       <h3 className="mb-[2px] text-center text-sm font-semibold leading-[21px]">{category.name}</h3>
-                      <p className="text-center text-sm leading-[21px] text-cosmetics-grey">{category.cosmetics_count} Produts</p>
+                      <p className="text-center text-sm leading-[21px] text-cosmetics-grey">{category.cosmetics_count} Products</p>
                     </div>
                   </div>
                 </Link>
@@ -178,7 +178,7 @@ export default function BrowsePage() {
               {popularCosmetics.length > 0 ? (
                 popularCosmetics.map((cosmetic) => (
                   <SwiperSlide className="!w-fit">
-                    <Link to="/details" key={cosmetic.id}>
+                    <Link to={`/cosmetic/${cosmetic.slug}`} key={cosmetic.id}>
                       <div className="relative flex h-[276px] w-[222px] items-center justify-center rounded-3xl transition-all duration-300 hover:bg-cosmetics-gradient-purple-pink hover:p-[2px]">
                         <div className="flex h-full flex-col justify-center gap-4 rounded-[23px] bg-white px-4 hover:rounded-[22px]">
                           <span className="absolute right-[14px] top-[14px] flex items-center justify-center gap-[2px] rounded-full bg-cosmetics-purple px-2 py-[6px]">
@@ -210,7 +210,7 @@ export default function BrowsePage() {
           <h2 className="font-bold">Fresh This Summer</h2>
           {allCosmetics.length > 0 ? (
             allCosmetics.map((cosmetic) => (
-              <Link to="/details" key={cosmetic.id}>
+              <Link to={`/cosmetic/${cosmetic.slug}`} key={cosmetic.id}>
                 <div className="flex h-[130px] items-center justify-center rounded-3xl bg-cosmetics-greylight p-px transition-all duration-300 hover:bg-cosmetics-gradient-purple-pink hover:p-[2px]">
                   <div className="flex h-full w-full items-center gap-4 rounded-[23px] bg-white px-4 hover:rounded-[22px]">
                     <div className="flex size-[90px] shrink-0 items-center justify-center">
