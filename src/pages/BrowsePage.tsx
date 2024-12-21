@@ -111,11 +111,11 @@ export default function BrowsePage() {
                 <img src="/assets/images/icons/search.svg" alt="icon" className="size-5 shrink-0" />
               </div>
             </a>
-            <a href="my-cart.html" className="flex size-[44px] items-center justify-center rounded-full bg-cosmetics-greylight p-px transition-all duration-300 hover:bg-cosmetics-gradient-purple-pink hover:p-[2px]">
+            <Link to="/cart" className="flex size-[44px] items-center justify-center rounded-full bg-cosmetics-greylight p-px transition-all duration-300 hover:bg-cosmetics-gradient-purple-pink hover:p-[2px]">
               <div className="flex h-full w-full shrink-0 items-center justify-center rounded-full bg-white">
                 <img src="/assets/images/icons/cart.svg" alt="icon" className="size-5 shrink-0" />
               </div>
-            </a>
+            </Link>
           </div>
         </div>
       </section>
@@ -177,8 +177,8 @@ export default function BrowsePage() {
             <Swiper direction="horizontal" spaceBetween={14} slidesPerView="auto" slidesOffsetAfter={20} slidesOffsetBefore={20}>
               {popularCosmetics.length > 0 ? (
                 popularCosmetics.map((cosmetic) => (
-                  <SwiperSlide className="!w-fit">
-                    <Link to={`/cosmetic/${cosmetic.slug}`} key={cosmetic.id}>
+                  <SwiperSlide className="!w-fit" key={cosmetic.id}>
+                    <Link to={`/cosmetic/${cosmetic.slug}`}>
                       <div className="relative flex h-[276px] w-[222px] items-center justify-center rounded-3xl transition-all duration-300 hover:bg-cosmetics-gradient-purple-pink hover:p-[2px]">
                         <div className="flex h-full flex-col justify-center gap-4 rounded-[23px] bg-white px-4 hover:rounded-[22px]">
                           <span className="absolute right-[14px] top-[14px] flex items-center justify-center gap-[2px] rounded-full bg-cosmetics-purple px-2 py-[6px]">

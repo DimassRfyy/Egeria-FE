@@ -50,11 +50,11 @@ export default function CategoryPage() {
               <h1 className="text-center text-lg font-bold leading-[27px]">Category</h1>
               <p className="text-center text-sm leading-[21px] text-cosmetics-grey">You deserve beauty life</p>
             </div>
-            <a href="my-cart.html">
+            <Link to="/cart">
               <div className="flex size-[44px] shrink-0 items-center justify-center rounded-full border border-cosmetics-greylight">
                 <img src="/assets/images/icons/cart.svg" alt="icon" className="size-5 shrink-0" />
               </div>
-            </a>
+            </Link>
           </div>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
