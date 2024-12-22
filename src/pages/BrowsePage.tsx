@@ -165,7 +165,7 @@ export default function BrowsePage() {
                 </Link>
               ))
             ) : (
-              <p>No categories found</p>
+              <p className="mx-auto">No categories found</p>
             )}
           </div>
         </div>
@@ -199,7 +199,7 @@ export default function BrowsePage() {
                   </SwiperSlide>
                 ))
               ) : (
-                <p>No popular cosmetics found</p>
+                <p className="mx-auto text-center">Something went wrong</p>
               )}
             </Swiper>
           </div>
@@ -232,7 +232,7 @@ export default function BrowsePage() {
               </Link>
             ))
           ) : (
-            <p>No cosmetics found</p>
+            <p className="mx-auto">Something went wrong</p>
           )}
         </div>
       </section>
