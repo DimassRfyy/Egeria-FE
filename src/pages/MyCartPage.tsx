@@ -62,6 +62,14 @@ export default function MyCartPage() {
   const tax = subTotal * 0.12;
   const grandTotal = subTotal + tax;
 
+  const handleRemoveItem = (slug: string) => {
+    const updatedCart = cart.filter((item) => item.slug !== slug);
+    setCart(updatedCart);
+    localStorage.setItem("cart", JSON.stringify(updatedCart));
+
+    setCosmeticDetails((prevDetails) => prevDetails.filter((cosmetic) => cosmetic.slug !== slug));
+  };
+
   if (loading) {
     return <p className="min-h-screen flex justify-center items-center">Loading...</p>;
   }
@@ -108,8 +116,8 @@ export default function MyCartPage() {
                               <h3 className="line-clamp-2 h-[42px] w-full text-sm font-semibold leading-[21px]">{cosmetic.name}</h3>
                             </div>
                           </div>
-                          <button type="button" className="shrink-0">
-                            <img src="/assets/images/icons/garbage.svg" alt="icon" className="size-5 shrink-0" />
+                          <button onClick={() => handleRemoveItem(cosmetic.slug)} className="shrink-0">
+                            <img src="/assets/images/icons/trash-red.svg" alt="icon" className="size-5 shrink-0" />
                           </button>
                         </div>
                         <div className="flex items-center justify-between">
@@ -150,7 +158,7 @@ export default function MyCartPage() {
                     Apply
                   </button>
                 </div>
-                <p className="text-sm leading-[21px] text-[#E70011]">Lorem tidak valid silahkan coba lagi ya</p>
+                {/* <p className="text-sm leading-[21px] text-[#E70011]">Lorem tidak valid silahkan coba lagi ya</p> */}
               </div>
               <div className="box h-[1px] w-full" />
               <div className="flex items-center justify-between">
