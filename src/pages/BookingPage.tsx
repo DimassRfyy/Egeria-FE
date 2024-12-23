@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { BookingFormData } from "../types/type";
 import { z } from "zod";
+import { bookingSchema } from "../types/validation";
 
 export default function BookingPage() {
   const [formData, setFormData] = useState<BookingFormData>({
@@ -12,6 +13,29 @@ export default function BookingPage() {
     post_code: "",
     city: "",
   });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const validation = bookingSchema.safeParse(formData);
+
+    if (!validation.success) {
+      setFormErrors(validation.error.issues);
+      return;
+    }
+
+    localStorage.setItem("bookingData", JSON.stringify(formData));
+    alert("Booking Information Saved");
+    navigate("/payment");
+    setFormErrors([]);
+  };
 
   const [formErrors, setFormErrors] = useState<z.ZodIssue[]>([]);
   const navigate = useNavigate();
@@ -90,7 +114,7 @@ export default function BookingPage() {
         </div>
       </header>
       <div>
-        <form action="payment.html" className="flex flex-col gap-5 px-5">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-5 px-5">
           <section id="Informations">
             <div className="flex flex-col gap-5 rounded-3xl bg-white px-[14px] py-5">
               <div className="flex items-center gap-[10px]">
@@ -106,8 +130,9 @@ export default function BookingPage() {
                 <div className="group relative flex h-[54px] items-center justify-center rounded-full bg-[#E0E0EC] transition-all duration-300 focus-within:bg-cosmetics-gradient-purple-pink">
                   <input
                     type="text"
-                    name=""
-                    id=""
+                    value={formData.name}
+                    onChange={handleChange}
+                    name="name"
                     className="absolute h-[calc(100%_-_2px)] w-[calc(100%_-_2px)] rounded-full bg-[#F6F6F8] pl-[57px] pr-[13px] font-semibold text-[#030504] transition-all duration-300 placeholder:font-normal placeholder:leading-[24px] placeholder:text-[#ACACB9] focus:h-[calc(100%_-_4px)] focus:w-[calc(100%_-_4px)] focus:outline-none"
                     placeholder="Enter your full name"
                   />
@@ -116,14 +141,16 @@ export default function BookingPage() {
                     <span className="h-[26px] w-px bg-[#E0E0EC] transition-all duration-300 group-focus-within:bg-cosmetics-gradient-purple-pink" />
                   </div>
                 </div>
-                <p className="text-sm leading-[21px] text-[#E70011]">Lorem tidak valid silahkan coba lagi ya</p>
+                {formErrors.find((error) => error.path.includes("name")) && <p className="text-sm leading-[21px] text-[#E70011]">{formErrors.find((error) => error.path.includes("name"))?.message}</p>}
               </label>
               <label className="flex flex-col gap-[6px]">
                 <h4 className="font-semibold text-[#030504]">Phone</h4>
                 <div className="group relative flex h-[54px] items-center justify-center rounded-full bg-[#E0E0EC] transition-all duration-300 focus-within:bg-cosmetics-gradient-purple-pink">
                   <input
-                    type="tel"
-                    name=""
+                    type="text"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    name="phone"
                     id=""
                     className="absolute h-[calc(100%_-_2px)] w-[calc(100%_-_2px)] rounded-full bg-[#F6F6F8] pl-[57px] pr-[13px] font-semibold text-[#030504] transition-all duration-300 placeholder:font-normal placeholder:leading-[24px] placeholder:text-[#ACACB9] focus:h-[calc(100%_-_4px)] focus:w-[calc(100%_-_4px)] focus:outline-none"
                     placeholder="Enter your phone"
@@ -133,14 +160,16 @@ export default function BookingPage() {
                     <span className="h-[26px] w-px bg-[#E0E0EC] transition-all duration-300 group-focus-within:bg-cosmetics-gradient-purple-pink" />
                   </div>
                 </div>
-                <p className="text-sm leading-[21px] text-[#E70011]">Lorem tidak valid silahkan coba lagi ya</p>
+                {formErrors.find((error) => error.path.includes("phone")) && <p className="text-sm leading-[21px] text-[#E70011]">{formErrors.find((error) => error.path.includes("phone"))?.message}</p>}
               </label>
               <label className="flex flex-col gap-[6px]">
                 <h4 className="font-semibold text-[#030504]">Email Address</h4>
                 <div className="group relative flex h-[54px] items-center justify-center rounded-full bg-[#E0E0EC] transition-all duration-300 focus-within:bg-cosmetics-gradient-purple-pink">
                   <input
                     type="email"
-                    name=""
+                    value={formData.email}
+                    onChange={handleChange}
+                    name="email"
                     id=""
                     className="absolute h-[calc(100%_-_2px)] w-[calc(100%_-_2px)] rounded-full bg-[#F6F6F8] pl-[57px] pr-[13px] font-semibold text-[#030504] transition-all duration-300 placeholder:font-normal placeholder:leading-[24px] placeholder:text-[#ACACB9] focus:h-[calc(100%_-_4px)] focus:w-[calc(100%_-_4px)] focus:outline-none"
                     placeholder="Write your complete email"
@@ -150,7 +179,7 @@ export default function BookingPage() {
                     <span className="h-[26px] w-px bg-[#E0E0EC] transition-all duration-300 group-focus-within:bg-cosmetics-gradient-purple-pink" />
                   </div>
                 </div>
-                <p className="text-sm leading-[21px] text-[#E70011]">Lorem tidak valid silahkan coba lagi ya</p>
+                {formErrors.find((error) => error.path.includes("email")) && <p className="text-sm leading-[21px] text-[#E70011]">{formErrors.find((error) => error.path.includes("email"))?.message}</p>}
               </label>
             </div>
           </section>
@@ -169,7 +198,9 @@ export default function BookingPage() {
                 <div className="group relative flex h-[54px] items-center justify-center rounded-full bg-[#E0E0EC] transition-all duration-300 focus-within:bg-cosmetics-gradient-purple-pink">
                   <input
                     type="text"
-                    name=""
+                    name="city"
+                    value={formData.city}
+                    onChange={handleChange}
                     id=""
                     className="absolute h-[calc(100%_-_2px)] w-[calc(100%_-_2px)] rounded-full bg-[#F6F6F8] pl-[57px] pr-[13px] font-semibold text-[#030504] transition-all duration-300 placeholder:font-normal placeholder:leading-[24px] placeholder:text-[#ACACB9] focus:h-[calc(100%_-_4px)] focus:w-[calc(100%_-_4px)] focus:outline-none"
                     placeholder="Enter your city"
@@ -179,31 +210,34 @@ export default function BookingPage() {
                     <span className="h-[26px] w-px bg-[#E0E0EC] transition-all duration-300 group-focus-within:bg-cosmetics-gradient-purple-pink" />
                   </div>
                 </div>
-                <p className="text-sm leading-[21px] text-[#E70011]">Lorem tidak valid silahkan coba lagi ya</p>
+                {formErrors.find((error) => error.path.includes("city")) && <p className="text-sm leading-[21px] text-[#E70011]">{formErrors.find((error) => error.path.includes("city"))?.message}</p>}
               </label>
               <label className="flex flex-col gap-[6px]">
                 <h4 className="font-semibold text-[#030504]">Address</h4>
                 <div className="group relative flex h-[130px] items-center justify-center rounded-3xl bg-[#E0E0EC] transition-all duration-300 focus-within:bg-cosmetics-gradient-purple-pink">
                   <textarea
-                    name=""
+                    name="address"
+                    value={formData.address}
+                    onChange={handleChange}
                     id=""
                     className="absolute h-[calc(100%_-_2px)] w-[calc(100%_-_2px)] resize-none rounded-3xl bg-[#F6F6F8] pl-[57px] pr-[13px] pt-[13px] font-semibold text-[#030504] transition-all duration-300 placeholder:font-normal placeholder:leading-[24px] placeholder:text-[#ACACB9] focus:h-[calc(100%_-_4px)] focus:w-[calc(100%_-_4px)] focus:rounded-[22px] focus:outline-none"
                     placeholder="Write your complete address"
-                    defaultValue={""}
                   />
                   <div className="absolute left-[14px] top-[13px] flex w-[35px] justify-between">
                     <img src="/assets/images/icons/apartment.svg" alt="icon" className="size-[24px] shrink-0" />
                     <span className="h-[26px] w-px bg-[#E0E0EC] transition-all duration-300 group-focus-within:bg-cosmetics-gradient-purple-pink" />
                   </div>
                 </div>
-                <p className="text-sm leading-[21px] text-[#E70011]">Lorem tidak valid silahkan coba lagi ya</p>
+                {formErrors.find((error) => error.path.includes("address")) && <p className="text-sm leading-[21px] text-[#E70011]">{formErrors.find((error) => error.path.includes("address"))?.message}</p>}
               </label>
               <label className="flex flex-col gap-[6px]">
                 <h4 className="font-semibold text-[#030504]">Post Code</h4>
                 <div className="group relative flex h-[54px] items-center justify-center rounded-full bg-[#E0E0EC] transition-all duration-300 focus-within:bg-cosmetics-gradient-purple-pink">
                   <input
-                    type="tel"
-                    name=""
+                    type="text"
+                    value={formData.post_code}
+                    onChange={handleChange}
+                    name="post_code"
                     id=""
                     className="absolute h-[calc(100%_-_2px)] w-[calc(100%_-_2px)] rounded-full bg-[#F6F6F8] pl-[57px] pr-[13px] font-semibold text-[#030504] transition-all duration-300 placeholder:font-normal placeholder:leading-[24px] placeholder:text-[#ACACB9] focus:h-[calc(100%_-_4px)] focus:w-[calc(100%_-_4px)] focus:outline-none"
                     placeholder="Write your post code"
@@ -213,7 +247,7 @@ export default function BookingPage() {
                     <span className="h-[26px] w-px bg-[#E0E0EC] transition-all duration-300 group-focus-within:bg-cosmetics-gradient-purple-pink" />
                   </div>
                 </div>
-                <p className="text-sm leading-[21px] text-[#E70011]">Lorem tidak valid silahkan coba lagi ya</p>
+                {formErrors.find((error) => error.path.includes("post_code")) && <p className="text-sm leading-[21px] text-[#E70011]">{formErrors.find((error) => error.path.includes("post_code"))?.message}</p>}
               </label>
             </div>
           </section>
