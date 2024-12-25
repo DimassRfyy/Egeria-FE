@@ -1,7 +1,8 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { BookingFormData, CartItem, Cosmetic } from "../types/type";
-import {z} from "zod";
+import { z } from "zod";
+import apiClient from "../services/apiServices";
 
 type formData = {
   proof: File | null;
@@ -21,6 +22,54 @@ export default function PaymentPage() {
   const [loading, setLoading] = useState<boolean>(true);
   const [successMessage, setSuccessMessage] = useState<String | null>(null);
   const [error, setError] = useState<String | null>(null);
+
+  const tax = 0.12;
+  const navigate = useNavigate();
+
+  const fetchCosmeticDetails = async (cartItems: CartItem[]) => {
+    try {
+      const fetchedDetails = await Promise.all(
+        cartItems.map(async (item) => {
+          const response = await apiClient.get(`/cosmetic/${item.slug}`);
+          return response.data.data;
+        })
+      );
+      setCosmeticDetails(fetchedDetails);
+      setLoading(false);
+
+      const cosmeticIdsWithQuantities = cartItems.map((cartItem) => ({
+        id: cartItem.cosmetic_id,
+        quantity: cartItem.quantity,
+      }));
+
+      setFormData((prevData) => ({
+        ...prevData,
+        cosmetic_ids: cosmeticIdsWithQuantities,
+      }));
+    } catch (error) {
+      console.error("Error fetching cosmetic details : ", error);
+      setLoading(false);
+      setError("Error fetching cosmetic details");
+    }
+  };
+
+  useEffect(() => {
+    const cartData = localStorage.getItem("cart");
+    const savedBookingData = localStorage.getItem("bookingData");
+
+    if (savedBookingData) {
+      setBookingData(JSON.parse(savedBookingData) as BookingFormData);
+    }
+
+    if (!cartData || (cartData && JSON.parse(cartData).length === 0)) {
+      navigate("/");
+      return;
+    }
+
+    const cartItems = JSON.parse(cartData) as CartItem[];
+    setCart(cartItems);
+    fetchCosmeticDetails(cartItems);
+  }, [navigate]);
 
   return (
     <main className="mx-auto flex min-h-screen max-w-[640px] flex-col gap-5 bg-[#F6F6F8] pb-[30px]">
