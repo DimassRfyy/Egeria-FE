@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { BookingFormData, CartItem, Cosmetic } from "../types/type";
 import { z } from "zod";
 import apiClient from "../services/apiServices";
+import { paymentSchema } from "../types/validation";
 
 type formData = {
   proof: File | null;
@@ -20,10 +21,9 @@ export default function PaymentPage() {
   const [bookingData, setBookingData] = useState<BookingFormData | null>(null);
   const [formErrors, setFormErrors] = useState<z.ZodIssue[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [successMessage, setSuccessMessage] = useState<String | null>(null);
-  const [error, setError] = useState<String | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const tax = 0.12;
   const navigate = useNavigate();
 
   const fetchCosmeticDetails = async (cartItems: CartItem[]) => {
@@ -70,6 +70,63 @@ export default function PaymentPage() {
     setCart(cartItems);
     fetchCosmeticDetails(cartItems);
   }, [navigate]);
+
+  const subTotal = cosmeticDetails.reduce((acc, cosmetic) => {
+    const cartItem = cart.find((item) => item.cosmetic_id === cosmetic.id);
+    return acc + (cartItem ? cosmetic.price * cartItem.quantity : 0);
+  }, 0);
+
+  const tax = subTotal * 0.12;
+  const totalQuantity = cart.reduce((acc, item) => acc + item.quantity, 0);
+  const grandTotal = subTotal + tax;
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files ? e.target.files[0] : null;
+    setFormData((prev) => ({
+      ...prev,
+      proof: file,
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const validation = paymentSchema.safeParse(formData);
+
+    if (!validation.success) {
+      setFormErrors(validation.error.issues);
+      return;
+    }
+    setFormErrors([]);
+
+    const submissionData = new FormData();
+
+    if (formData.proof) {
+      submissionData.append("proof", formData.proof);
+    }
+
+    if (bookingData) {
+      submissionData.append("name", bookingData.name);
+      submissionData.append("email", bookingData.email);
+      submissionData.append("phone", bookingData.phone);
+      submissionData.append("address", bookingData.address);
+      submissionData.append("city", bookingData.city);
+      submissionData.append("post_code", bookingData.post_code);
+    }
+
+    formData.cosmetic_ids.forEach((item, index) => {
+      submissionData.append(`cosmetic_ids[${index}][id]`, String(item.id));
+      submissionData.append(`cosmetic_ids[${index}][quantity]`, String(item.quantity));
+    });
+  };
+
+  if (loading) {
+    return <p className="min-h-screen flex justify-center items-center">Loading...</p>;
+  }
+
+  if (error) {
+    return <p className="min-h-screen flex justify-center items-center">Error: {error}</p>;
+  }
 
   return (
     <main className="mx-auto flex min-h-screen max-w-[640px] flex-col gap-5 bg-[#F6F6F8] pb-[30px]">
@@ -151,14 +208,14 @@ export default function PaymentPage() {
                 <img src="/assets/images/icons/list.svg" alt="icon" className="size-5 shrink-0" />
                 <p>Total Quantity</p>
               </div>
-              <strong className="font-semibold">198 Items</strong>
+              <strong className="font-semibold">{totalQuantity} Items</strong>
             </div>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-[6px]">
                 <img src="/assets/images/icons/list.svg" alt="icon" className="size-5 shrink-0" />
                 <p>Sub Total</p>
               </div>
-              <strong className="font-semibold">Rp 19.000.000</strong>
+              <strong className="font-semibold">{new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(subTotal)}</strong>
             </div>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-[6px]">
@@ -184,16 +241,18 @@ export default function PaymentPage() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-[6px]">
                 <img src="/assets/images/icons/list.svg" alt="icon" className="size-5 shrink-0" />
-                <p>Tax 11%</p>
+                <p>Tax 12%</p>
               </div>
-              <strong className="font-semibold">Rp 8.380.391</strong>
+              <strong className="font-semibold">{new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(tax)}</strong>
             </div>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-[6px]">
                 <img src="/assets/images/icons/list.svg" alt="icon" className="size-5 shrink-0" />
                 <p>Grand Total</p>
               </div>
-              <strong className="text-[22px] font-bold leading-[33px] text-cosmetics-pink">Rp 58.380.391</strong>
+              <strong className="text-[22px] font-bold leading-[33px] text-cosmetics-pink">
+                {new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(grandTotal)}
+              </strong>
             </div>
           </div>
         </div>
@@ -310,7 +369,7 @@ export default function PaymentPage() {
           </div>
         </div>
       </section>
-      <form action="booking-finished.html" className="flex flex-col gap-5 px-5">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-5 px-5">
         <section id="PaymentConfirmation">
           <div className="flex flex-col gap-5 rounded-3xl bg-white px-[14px] py-5">
             <div className="flex items-center gap-[10px]">
