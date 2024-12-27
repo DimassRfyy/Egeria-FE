@@ -4,6 +4,7 @@ import { BookingFormData, CartItem, Cosmetic } from "../types/type";
 import { z } from "zod";
 import apiClient from "../services/apiServices";
 import { paymentSchema } from "../types/validation";
+import AccordionSection from "../components/AccordionSection";
 
 type formData = {
   proof: File | null;
@@ -22,6 +23,7 @@ export default function PaymentPage() {
   const [formErrors, setFormErrors] = useState<z.ZodIssue[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [proofFileName, setProofFileName] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const navigate = useNavigate();
@@ -86,6 +88,7 @@ export default function PaymentPage() {
       ...prev,
       proof: file,
     }));
+    setProofFileName(file ? file.name : null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -131,6 +134,7 @@ export default function PaymentPage() {
       if (response.status === 200 || response.status === 201) {
         console.log("Transaction response data : ", response.data.data);
         const trxId = response.data.data.trx_id;
+        const email = response.data.data.email;
 
         if (!trxId) {
           console.error("Error : Trx id is undifined");
@@ -141,9 +145,9 @@ export default function PaymentPage() {
         localStorage.removeItem("bookingData");
         setFormData({ proof: null, cosmetic_ids: [] });
         setLoading(false);
-        navigate(`/booking-finished?trx_id=${trxId}`);
+        navigate(`/booking-finished?trx_id=${trxId}&email=${email}`);
       } else {
-        console.error("Unexpected response status:" , response.status);
+        console.error("Unexpected response status:", response.status);
         setLoading(false);
       }
     } catch (error) {
@@ -217,191 +221,135 @@ export default function PaymentPage() {
       <header>
         <div className="flex flex-col gap-1 px-5">
           <h2 className="text-[26px] font-bold leading-[39px]">Make Payment</h2>
-          <p className="text-cosmetics-grey">Data asli harus diberikan amet</p>
+          <p className="text-cosmetics-grey">Select payment and upload proof of payment</p>
         </div>
       </header>
-      <section id="Informations" className="px-5">
-        <div className="flex flex-col gap-5 rounded-3xl bg-white px-5 py-[30px]">
+      <AccordionSection title="Payment Details" subTitle="Before paying check again" iconSrc="/assets/images/icons/information.svg">
+        <div id="PaymentDetailsJ" className="flex flex-col gap-5">
+          <div className="box h-[1px] w-full"></div>
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-[10px]">
-              <img src="/assets/images/icons/information.svg" alt="icon" className="size-[38px] shrink-0" />
-              <div className="flex flex-col gap-1">
-                <h3 className="font-semibold text-[#0C0422]">Payment Details</h3>
-                <p className="text-sm leading-[21px] text-[#8C8582]">Sebelum bayar cek lagi</p>
-              </div>
+            <div className="flex items-center gap-[6px]">
+              <img src="/assets/images/icons/list.svg" alt="icon" className="size-5 shrink-0" />
+              <p>Total Quantity</p>
             </div>
-            <button type="button" data-expand="PaymentDetailsJ" className="shrink-0">
-              <img src="/assets/images/icons/bottom.svg" alt="icon" className="size-6 shrink-0 transition-all duration-300" />
-            </button>
+            <strong className="font-semibold">{totalQuantity} Items</strong>
           </div>
-          <div id="PaymentDetailsJ" className="flex flex-col gap-5">
-            <div className="box h-[1px] w-full"></div>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-[6px]">
-                <img src="/assets/images/icons/list.svg" alt="icon" className="size-5 shrink-0" />
-                <p>Total Quantity</p>
-              </div>
-              <strong className="font-semibold">{totalQuantity} Items</strong>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-[6px]">
+              <img src="/assets/images/icons/list.svg" alt="icon" className="size-5 shrink-0" />
+              <p>Sub Total</p>
             </div>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-[6px]">
-                <img src="/assets/images/icons/list.svg" alt="icon" className="size-5 shrink-0" />
-                <p>Sub Total</p>
-              </div>
-              <strong className="font-semibold">{new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(subTotal)}</strong>
+            <strong className="font-semibold">{new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(subTotal)}</strong>
+          </div>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-[6px]">
+              <img src="/assets/images/icons/list.svg" alt="icon" className="size-5 shrink-0" />
+              <p>Discount Code</p>
             </div>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-[6px]">
-                <img src="/assets/images/icons/list.svg" alt="icon" className="size-5 shrink-0" />
-                <p>Discount Code</p>
-              </div>
-              <strong className="font-semibold">Rp 0</strong>
+            <strong className="font-semibold">Rp 0</strong>
+          </div>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-[6px]">
+              <img src="/assets/images/icons/list.svg" alt="icon" className="size-5 shrink-0" />
+              <p>Delivery Fee</p>
             </div>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-[6px]">
-                <img src="/assets/images/icons/list.svg" alt="icon" className="size-5 shrink-0" />
-                <p>Delivery Fee</p>
-              </div>
-              <strong className="font-semibold">Rp 0 (Promo)</strong>
+            <strong className="font-semibold">Rp 0 (Promo)</strong>
+          </div>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-[6px]">
+              <img src="/assets/images/icons/list.svg" alt="icon" className="size-5 shrink-0" />
+              <p>Insurance</p>
             </div>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-[6px]">
-                <img src="/assets/images/icons/list.svg" alt="icon" className="size-5 shrink-0" />
-                <p>Insurance</p>
-              </div>
-              <strong className="font-semibold">Included</strong>
+            <strong className="font-semibold">Included</strong>
+          </div>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-[6px]">
+              <img src="/assets/images/icons/list.svg" alt="icon" className="size-5 shrink-0" />
+              <p>Tax 12%</p>
             </div>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-[6px]">
-                <img src="/assets/images/icons/list.svg" alt="icon" className="size-5 shrink-0" />
-                <p>Tax 12%</p>
-              </div>
-              <strong className="font-semibold">{new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(tax)}</strong>
+            <strong className="font-semibold">{new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(tax)}</strong>
+          </div>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-[6px]">
+              <img src="/assets/images/icons/list.svg" alt="icon" className="size-5 shrink-0" />
+              <p>Grand Total</p>
             </div>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-[6px]">
-                <img src="/assets/images/icons/list.svg" alt="icon" className="size-5 shrink-0" />
-                <p>Grand Total</p>
-              </div>
-              <strong className="text-[22px] font-bold leading-[33px] text-cosmetics-pink">
-                {new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(grandTotal)}
-              </strong>
-            </div>
+            <strong className="text-[22px] font-bold leading-[33px] text-cosmetics-pink">
+              {new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(grandTotal)}
+            </strong>
           </div>
         </div>
-      </section>
-      <section id="TrustedEwallets" className="px-5">
-        <div className="flex flex-col gap-5 rounded-3xl bg-white px-[14px] py-5">
+      </AccordionSection>
+      <AccordionSection title="Trusted E-Wallets" subTitle="Choose E-Wallet available" iconSrc="/assets/images/icons/wallet.svg">
+        <div id="TrustedEwalletsJ" className="flex flex-col gap-5">
+          <div className="box h-[1px] w-full"></div>
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-[10px]">
-              <img src="/assets/images/icons/wallet.svg" alt="icon" className="size-[38px] shrink-0" />
-              <div className="flex flex-col gap-1">
-                <h3 className="font-semibold text-[#0C0422]">Trusted E-Wallets</h3>
-                <p className="text-sm leading-[21px] text-[#8C8582]">Choose lorem dolor active</p>
-              </div>
-            </div>
-            <button type="button" data-expand="TrustedEwalletsJ" className="shrink-0">
-              <img src="/assets/images/icons/bottom.svg" alt="icon" className="size-6 shrink-0 transition-all duration-300" />
-            </button>
-          </div>
-          <div id="TrustedEwalletsJ" className="flex flex-col gap-5">
-            <div className="box h-[1px] w-full"></div>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <img src="/assets/images/thumbnails/link-aja.png" alt="image" className="h-[60px] w-[80px] shrink-0" />
-                <div>
-                  <h4 className="font-semibold">LinkAja Pro</h4>
-                  <p className="text-sm leading-[21px] text-cosmetics-grey">Offline</p>
-                </div>
-              </div>
-              <span className="rounded-full bg-[#F6F6F8] px-[14px] py-2">
-                <p className="text-sm font-semibold leading-[21px] text-[#ACACB9]">Inactive</p>
-              </span>
-            </div>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <img src="/assets/images/thumbnails/ovo.png" alt="image" className="h-[60px] w-[80px] shrink-0" />
-                <div>
-                  <h4 className="font-semibold">OVO Inter</h4>
-                  <p className="text-sm leading-[21px] text-cosmetics-grey">Offline</p>
-                </div>
-              </div>
-              <span className="rounded-full bg-[#F6F6F8] px-[14px] py-2">
-                <p className="text-sm font-semibold leading-[21px] text-[#ACACB9]">Inactive</p>
-              </span>
-            </div>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <img src="/assets/images/thumbnails/gopay.png" alt="image" className="h-[60px] w-[80px] shrink-0" />
-                <div>
-                  <h4 className="font-semibold">Link Aja</h4>
-                  <p className="text-sm leading-[21px] text-cosmetics-grey">Offline</p>
-                </div>
-              </div>
-              <span className="rounded-full bg-[#F6F6F8] px-[14px] py-2">
-                <p className="text-sm font-semibold leading-[21px] text-[#ACACB9]">Inactive</p>
-              </span>
-            </div>
-          </div>
-        </div>
-      </section>
-      <section id="CasOnDelivery" className="px-5">
-        <div className="flex flex-col gap-5 rounded-3xl bg-white px-[14px] py-5">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-[10px]">
-              <img src="/assets/images/icons/cash.svg" alt="icon" className="size-[38px] shrink-0" />
-              <div className="flex flex-col gap-1">
-                <h3 className="font-semibold text-[#0C0422]">Cash on Delivery</h3>
-                <p className="text-sm leading-[21px] text-[#8C8582]">Choose lorem dolor active</p>
-              </div>
-            </div>
-            <button type="button" data-expand="CasOnDeliveryJ" className="shrink-0">
-              <img src="/assets/images/icons/bottom.svg" alt="icon" className="size-6 shrink-0 transition-all duration-300" />
-            </button>
-          </div>
-          <div id="CasOnDeliveryJ" className="flex flex-col gap-5">
-            <div className="box h-[1px] w-full"></div>
-            <div className="rounded-2xl bg-[#F6F6F8] p-[10px]">
-              <p className="text-sm">Layanan pembayaran ini belum si amet tersedia karena sedang proses dolor.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-      <section id="BankTransfer" className="px-5">
-        <div className="flex flex-col gap-5 rounded-3xl bg-white px-[14px] py-5">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-[10px]">
-              <img src="/assets/images/icons/banktf.svg" alt="icon" className="size-[38px] shrink-0" />
-              <div className="flex flex-col gap-1">
-                <h3 className="font-semibold text-[#0C0422]">Bank Transfer</h3>
-                <p className="text-sm leading-[21px] text-[#8C8582]">Choose lorem dolor active</p>
-              </div>
-            </div>
-            <button type="button" data-expand="BankTransferJ" className="shrink-0">
-              <img src="/assets/images/icons/bottom.svg" alt="icon" className="size-6 shrink-0 transition-all duration-300" />
-            </button>
-          </div>
-          <div id="BankTransferJ" className="flex flex-col gap-5">
-            <div className="box h-[1px] w-full"></div>
-            <div className="flex items-start gap-4">
-              <img src="/assets/images/thumbnails/bca.png" alt="image" className="h-[60px] w-[81px] shrink-0" />
+            <div className="flex items-center gap-4">
+              <img src="/assets/images/thumbnails/link-aja.png" alt="image" className="h-[60px] w-[80px] shrink-0" />
               <div>
-                <h4 className="text-sm leading-[21px] text-cosmetics-grey">Bank Central Asia</h4>
-                <strong className="font-semibold">9893981092</strong>
-                <p className="text-sm leading-[21px] text-cosmetics-grey">PT Shayna Beauty</p>
+                <h4 className="font-semibold">LinkAja</h4>
+                <p className="text-sm leading-[21px] text-cosmetics-grey">Egeria Official</p>
               </div>
             </div>
-            <div className="flex items-start gap-4">
-              <img src="/assets/images/thumbnails/mandiri.png" alt="image" className="h-[60px] w-[81px] shrink-0" />
+            <span className="rounded-full bg-[#F6F6F8] px-[14px] py-2">
+              <p className="text-sm font-semibold leading-[21px] text-[#ACACB9]">Inactive</p>
+            </span>
+          </div>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <img src="/assets/images/thumbnails/ovo.png" alt="image" className="h-[60px] w-[80px] shrink-0" />
               <div>
-                <h4 className="text-sm leading-[21px] text-cosmetics-grey">Bank Mandiri</h4>
-                <strong className="font-semibold">193084820912</strong>
-                <p className="text-sm leading-[21px] text-cosmetics-grey">PT Shayna Beauty</p>
+                <h4 className="font-semibold">OVO</h4>
+                <p className="text-sm leading-[21px] text-cosmetics-grey">Egeria Official</p>
               </div>
+            </div>
+            <span className="rounded-full bg-[#F6F6F8] px-[14px] py-2">
+              <p className="text-sm font-semibold leading-[21px] text-[#ACACB9]">Inactive</p>
+            </span>
+          </div>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <img src="/assets/images/thumbnails/gopay.png" alt="image" className="h-[60px] w-[80px] shrink-0" />
+              <div>
+                <h4 className="font-semibold">Gopay</h4>
+                <p className="text-sm leading-[21px] text-cosmetics-grey">Egeria Official</p>
+              </div>
+            </div>
+            <span className="rounded-full bg-[#F6F6F8] px-[14px] py-2">
+              <p className="text-sm font-semibold leading-[21px] text-[#ACACB9]">Inactive</p>
+            </span>
+          </div>
+        </div>
+      </AccordionSection>
+      <AccordionSection title="Bank Transfer" subTitle="Choose bank available" iconSrc="/assets/images/icons/banktf.svg">
+        <div id="BankTransferJ" className="flex flex-col gap-5">
+          <div className="box h-[1px] w-full"></div>
+          <div className="flex items-start gap-4">
+            <img src="/assets/images/thumbnails/bca.png" alt="image" className="h-[60px] w-[81px] shrink-0" />
+            <div>
+              <h4 className="text-sm leading-[21px] text-cosmetics-grey">Bank Central Asia</h4>
+              <strong className="font-semibold">9893981092</strong>
+              <p className="text-sm leading-[21px] text-cosmetics-grey">Egeria Cosmetic Store</p>
+            </div>
+          </div>
+          <div className="flex items-start gap-4">
+            <img src="/assets/images/thumbnails/mandiri.png" alt="image" className="h-[60px] w-[81px] shrink-0" />
+            <div>
+              <h4 className="text-sm leading-[21px] text-cosmetics-grey">Bank Mandiri</h4>
+              <strong className="font-semibold">193084820912</strong>
+              <p className="text-sm leading-[21px] text-cosmetics-grey">Egeria Cosmetic Store</p>
             </div>
           </div>
         </div>
-      </section>
+      </AccordionSection>
+      <AccordionSection title="Cash On Delivery" subTitle="Pay after order arrives" iconSrc="/assets/images/icons/cash.svg">
+        <div id="CasOnDeliveryJ" className="flex flex-col gap-5">
+          <div className="box h-[1px] w-full"></div>
+          <div className="rounded-2xl bg-[#F6F6F8] p-[10px]">
+            <p className="text-sm">This payment service will be coming soon please use the existing payment</p>
+          </div>
+        </div>
+      </AccordionSection>
       <form onSubmit={handleSubmit} className="flex flex-col gap-5 px-5">
         <section id="PaymentConfirmation">
           <div className="flex flex-col gap-5 rounded-3xl bg-white px-[14px] py-5">
@@ -409,7 +357,7 @@ export default function PaymentPage() {
               <img src="/assets/images/icons/information.svg" alt="icon" className="size-[38px] shrink-0" />
               <div className="flex flex-col gap-1">
                 <h3 className="font-semibold text-[#0C0422]">Payment Confirmation</h3>
-                <p className="text-sm leading-[21px] text-[#8C8582]">Upload bukti transfer lorem dor</p>
+                <p className="text-sm leading-[21px] text-[#8C8582]">After paying, upload proof of your transfer</p>
               </div>
             </div>
             <div className="box h-[1px] w-full"></div>
@@ -418,7 +366,7 @@ export default function PaymentPage() {
               <div className="group relative flex h-[54px] items-center justify-center rounded-full bg-[#E0E0EC] transition-all duration-300 focus-within:bg-cosmetics-gradient-purple-pink">
                 <div className="h-[calc(100%_-_2px)] w-[calc(100%_-_2px)] rounded-full bg-[#F6F6F8] transition-all duration-300 focus-within:h-[calc(100%_-_4px)] focus-within:w-[calc(100%_-_4px)]">
                   <p id="upload" className="absolute left-[57px] top-1/2 -translate-y-1/2 py-[15px] text-[#ACACB9]">
-                    Add an attachment
+                    {proofFileName ? proofFileName : "Upload proof of payment"}
                   </p>
                   <input
                     type="file"
