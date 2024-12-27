@@ -118,6 +118,39 @@ export default function PaymentPage() {
       submissionData.append(`cosmetic_ids[${index}][id]`, String(item.id));
       submissionData.append(`cosmetic_ids[${index}][quantity]`, String(item.quantity));
     });
+
+    try {
+      setLoading(true);
+
+      const response = await apiClient.post("/booking-transaction", submissionData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      if (response.status === 200 || response.status === 201) {
+        console.log("Transaction response data : ", response.data.data);
+        const trxId = response.data.data.trx_id;
+
+        if (!trxId) {
+          console.error("Error : Trx id is undifined");
+        }
+
+        setSuccessMessage("Payment proof uploaded successfully!");
+        localStorage.removeItem("cart");
+        localStorage.removeItem("bookingData");
+        setFormData({ proof: null, cosmetic_ids: [] });
+        setLoading(false);
+        navigate(`/booking-finished?trx_id=${trxId}`);
+      } else {
+        console.error("Unexpected response status:" , response.status);
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error("Error submiting payment : ", error);
+      setLoading(false);
+      setFormErrors([]);
+    }
   };
 
   if (loading) {
@@ -389,7 +422,8 @@ export default function PaymentPage() {
                   </p>
                   <input
                     type="file"
-                    name="file-upload"
+                    name="proof"
+                    onChange={handleChange}
                     id="file-upload"
                     className="absolute top-1/2 w-full -translate-y-1/2 rounded-full py-[15px] pl-[57px] pr-[13px] font-semibold text-[#030504] opacity-0 file:hidden focus:outline-none"
                   />
@@ -399,10 +433,10 @@ export default function PaymentPage() {
                   </div>
                 </div>
               </div>
-              <p className="text-sm leading-[21px] text-[#E70011]">Lorem tidak valid silahkan coba lagi ya</p>
+              {formErrors.find((error) => error.path.includes("proof")) && <p className="text-sm leading-[21px] text-[#E70011]">{formErrors.find((error) => error.path.includes("proof"))?.message}</p>}
             </label>
-            <button type="submit" className="flex w-full items-center justify-between rounded-full bg-cosmetics-gradient-pink-white px-5 py-[14px] transition-all duration-300 hover:shadow-[0px_6px_22px_0px_#FF4D9E82]">
-              <strong className="font-semibold text-white">Confirm My Payment</strong>
+            <button disabled={loading} type="submit" className="flex w-full items-center justify-between rounded-full bg-cosmetics-gradient-pink-white px-5 py-[14px] transition-all duration-300 hover:shadow-[0px_6px_22px_0px_#FF4D9E82]">
+              <strong className="font-semibold text-white">{loading ? "Submitting..." : "Confirm My Payment"}</strong>
               <img src="/assets/images/icons/right.svg" alt="icon" className="size-[24px] shrink-0" />
             </button>
           </div>
