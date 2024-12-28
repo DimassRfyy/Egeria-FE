@@ -22,7 +22,6 @@ export default function PaymentPage() {
   const [bookingData, setBookingData] = useState<BookingFormData | null>(null);
   const [formErrors, setFormErrors] = useState<z.ZodIssue[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [proofFileName, setProofFileName] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -140,7 +139,6 @@ export default function PaymentPage() {
           console.error("Error : Trx id is undifined");
         }
 
-        setSuccessMessage("Payment proof uploaded successfully!");
         localStorage.removeItem("cart");
         localStorage.removeItem("bookingData");
         setFormData({ proof: null, cosmetic_ids: [] });
