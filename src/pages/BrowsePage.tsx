@@ -3,6 +3,7 @@ import { Category, Cosmetic } from "../types/type";
 import apiClient from "../services/apiServices";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import BottomNav from "../components/BottomNav";
 
 const fetchCategories = async () => {
   const response = await apiClient.get("/categories");
@@ -191,7 +192,7 @@ export default function BrowsePage() {
                           <div className="des flex flex-col gap-1">
                             <h4 className="text-xs leading-[18px] text-cosmetics-purple">{cosmetic.brand.name.toLocaleUpperCase()}</h4>
                             <h3 className="line-clamp-2 h-[48px] w-full font-semibold">{cosmetic.name}</h3>
-                            <strong className="font-semibold text-cosmetics-pink">{new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(cosmetic.price)}</strong>
+                            <strong className="font-semibold text-cosmetics-pink">{new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(cosmetic.price)}</strong>
                           </div>
                         </div>
                       </div>
@@ -220,7 +221,7 @@ export default function BrowsePage() {
                       <h4 className="text-xs leading-[18px] text-cosmetics-purple">{cosmetic.brand.name.toLocaleUpperCase()}</h4>
                       <h3 className="line-clamp-2 h-[48px] w-full font-semibold">{cosmetic.name}</h3>
                       <div className="flex items-center justify-between">
-                        <strong className="font-semibold text-cosmetics-pink">{new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(cosmetic.price)}</strong>
+                        <strong className="font-semibold text-cosmetics-pink">{new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(cosmetic.price)}</strong>
                         <div className="flex items-center justify-center gap-[2px]">
                           <img src="/assets/images/icons/star.svg" alt="icon" className="size-4 shrink-0" />
                           <p className="text-xs font-bold leading-[18px]">4.8</p>
@@ -236,55 +237,7 @@ export default function BrowsePage() {
           )}
         </div>
       </section>
-      <nav className="fixed bottom-0 left-0 right-0 z-30 mx-auto w-full">
-        <div className="mx-auto max-w-[640px]">
-          <div className="h-[89px] bg-white px-[30px] shadow-[0px_-4px_30px_0px_#1107260D]">
-            <ul className="flex justify-between">
-              <li className="flex items-center">
-                <a href="">
-                  <div className="flex w-[50px] flex-col items-center gap-1">
-                    <img src="/assets/images/icons/browse.svg" alt="icon" className="size-6 shrink-0" />
-                    <p className="text-sm font-semibold leading-[21px] text-cosmetics-pink">Browse</p>
-                  </div>
-                </a>
-              </li>
-              <li className="flex items-center">
-                <a href="view-orders.html">
-                  <div className="flex w-[50px] flex-col items-center gap-1">
-                    <img src="/assets/images/icons/car.svg" alt="icon" className="size-6 shrink-0" />
-                    <p className="text-sm leading-[21px]">Orders</p>
-                  </div>
-                </a>
-              </li>
-              <li>
-                <a href="" className="relative -top-[23px]">
-                  <div className="relative flex h-[80px] w-[80px] items-center justify-center rounded-full bg-[#FAF9FA]">
-                    <div className="flex size-[65px] items-center justify-center rounded-full bg-cosmetics-gradient-pink-white transition-shadow duration-300 hover:shadow-[0px_6px_10px_0px_#FF4D9E6E]">
-                      <img src="/assets/images/icons/video.svg" alt="icon" className="size-[30px] shrink-0" />
-                    </div>
-                  </div>
-                </a>
-              </li>
-              <li className="flex items-center">
-                <a href="">
-                  <div className="flex w-[50px] flex-col items-center gap-1">
-                    <img src="/assets/images/icons/gift.svg" alt="icon" className="size-6 shrink-0" />
-                    <p className="text-sm leading-[21px]">Perks</p>
-                  </div>
-                </a>
-              </li>
-              <li className="flex items-center">
-                <a href="">
-                  <div className="flex w-[50px] flex-col items-center gap-1">
-                    <img src="/assets/images/icons/message.svg" alt="icon" className="size-6 shrink-0" />
-                    <p className="text-sm leading-[21px]">Helps</p>
-                  </div>
-                </a>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </nav>
+      <BottomNav />
     </main>
   );
 }
