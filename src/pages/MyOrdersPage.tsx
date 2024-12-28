@@ -44,7 +44,7 @@ export default function MyOrdersPage() {
       }
     } catch (error) {
       if (isAxiosError(error)) {
-        if (error.response && error.response.status === 404) {
+        if (error.response && (error.response.status === 404 || error.response.status === 422)) {
           navigate("/my-booking", { state: { bookingDetails: null, notFound: true } });
         }
       }
