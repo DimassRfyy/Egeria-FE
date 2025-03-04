@@ -1,5 +1,6 @@
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Category, Cosmetic } from "../types/type";
+import { Autoplay } from "swiper/modules";
+import { Brand, Category, Cosmetic } from "../types/type";
 import apiClient from "../services/apiServices";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
@@ -7,6 +8,11 @@ import BottomNav from "../components/BottomNav";
 
 const fetchCategories = async () => {
   const response = await apiClient.get("/categories");
+  return response.data.data;
+};
+
+const fetchBrands = async () => {
+  const response = await apiClient.get("/brands");
   return response.data.data;
 };
 
@@ -22,10 +28,12 @@ const fetchAllCosmetics = async () => {
 
 export default function BrowsePage() {
   const [categories, setCategories] = useState<Category[]>([]);
+  const [brands, setBrands] = useState<Brand[]>([]);
   const [popularCosmetics, setPopularCosmetics] = useState<Cosmetic[]>([]);
   const [allCosmetics, setAllCosmetics] = useState<Cosmetic[]>([]);
 
   const [loadingCategories, setLoadingCategories] = useState(true);
+  const [loadingBrands, setLoadingBrands] = useState(true);
   const [loadingPopularCosmetics, setLoadingPopularCosmetics] = useState(true);
   const [loadingAllCosmetics, setLoadingAllCosmetics] = useState(true);
 
@@ -40,6 +48,17 @@ export default function BrowsePage() {
         setError("Failed to fetch categories");
       } finally {
         setLoadingCategories(false);
+      }
+    };
+
+    const fetchBrandsData = async () => {
+      try {
+        const brandsData = await fetchBrands();
+        setBrands(brandsData);
+      } catch {
+        setError("Failed to fetch brands");
+      } finally {
+        setLoadingBrands(false);
       }
     };
 
@@ -66,11 +85,12 @@ export default function BrowsePage() {
     };
 
     fetchCategoriesData();
+    fetchBrandsData();
     fetchPopularCosmeticsData();
     fetchAllCosmeticsData();
   }, []);
 
-  if (loadingCategories && loadingPopularCosmetics && loadingAllCosmetics) {
+  if (loadingCategories && loadingPopularCosmetics && loadingAllCosmetics && loadingBrands) {
     return <p className="min-h-screen flex justify-center items-center">Loading...</p>;
   }
 
@@ -122,7 +142,7 @@ export default function BrowsePage() {
       </section>
       <section id="Hero">
         <div id="HeroSlider" className="swiper w-full overflow-x-hidden">
-          <Swiper direction="horizontal" spaceBetween={16} slidesPerView="auto" slidesOffsetAfter={20} slidesOffsetBefore={20}>
+          <Swiper direction="horizontal" spaceBetween={16} slidesPerView="auto" slidesOffsetAfter={20} slidesOffsetBefore={20} autoplay={{ delay: 3000 }} loop={true} modules={[Autoplay]}>
             <SwiperSlide className="!w-fit">
               <a href="">
                 <div className="flex h-[190px] w-[320px] items-center justify-center overflow-hidden rounded-3xl">
@@ -171,6 +191,7 @@ export default function BrowsePage() {
           </div>
         </div>
       </section>
+
       <section id="PopularChoices">
         <div className="flex flex-col gap-4 bg-[#F6F6F8] pb-[30px] pt-5">
           <h2 className="px-5 font-bold">Popular Choices</h2>
@@ -201,6 +222,42 @@ export default function BrowsePage() {
                 ))
               ) : (
                 <p className="mx-auto text-center">Something went wrong</p>
+              )}
+            </Swiper>
+          </div>
+        </div>
+      </section>
+
+      <section id="TopBrands">
+        <div className="flex flex-col gap-4 px-5">
+          <h2 className="font-bold">Top Brands</h2>
+          <div className="brands-swiper">
+            <Swiper
+              slidesPerView={2.5}
+              spaceBetween={16}
+              pagination={{
+                clickable: true,
+              }}
+              className="mySwiper"
+            >
+              {brands.map.length > 0 ? (
+                brands.map((brand) => (
+                  <SwiperSlide>
+                    <Link to={`/brand/${brand.slug}`} key={brand.id}>
+                      <div className="flex h-[142px] items-center justify-center rounded-3xl bg-cosmetics-greylight p-px transition-all duration-300 hover:bg-cosmetics-gradient-purple-pink hover:p-[2px]">
+                        <div className="flex h-full w-full flex-col justify-center rounded-[23px] bg-white px-[10px] hover:rounded-[22px]">
+                          <div className="mx-auto mb-[10px] flex size-[60px] items-center justify-center overflow-hidden rounded-2xl">
+                            <img src={`${BASE_URL}/${brand.photo}`} alt="Brand name" className="h-full w-full object-cover" />
+                          </div>
+                          <h3 className="mb-[2px] text-center text-sm font-semibold leading-[21px]">{brand.name}</h3>
+                          <p className="text-center text-sm leading-[21px] text-cosmetics-grey">{brand.cosmetics_count} Products</p>
+                        </div>
+                      </div>
+                    </Link>
+                  </SwiperSlide>
+                ))
+              ) : (
+                <p className="mx-auto">No brands found</p>
               )}
             </Swiper>
           </div>

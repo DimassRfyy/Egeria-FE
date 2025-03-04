@@ -8,6 +8,7 @@ import PaymentPage from "./pages/PaymentPage"
 import BookingFinishedPage from "./pages/BookingFinishedPage"
 import MyOrdersPage from "./pages/MyOrdersPage"
 import MyBookingDetailsPage from "./pages/MyBookingDetailsPage"
+import BrandPage from "./pages/BrandPage"
 
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
         <Route path="/" element={<BrowsePage />} />
         <Route path="/cosmetic/:slug" element={<DetailsPage />} />
         <Route path="/category/:slug" element={<CategoryPage />} />
+        <Route path="/brand/:slug" element={<BrandPage />} />
         <Route path="/cart" element={<MyCartPage />} />
         <Route path="/booking" element={<BookingPage />} />
         <Route path="/payment" element={<PaymentPage />} />
